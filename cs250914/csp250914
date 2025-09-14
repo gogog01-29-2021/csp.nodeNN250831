@@ -1,0 +1,42 @@
+(base) PS C:\Users\user\Documents\tsd> findstr /s /i "graph" *.py
+archive\node\math.py:@csp.graph
+archive\node\math.py:@csp.graph
+archive\node\trade.py:@csp.graph
+archive\old_order_book_input_adapter.py:@csp.graph
+archive\old_order_book_input_adapter.py:def my_graph():
+
+(base) PS C:\Users\user\Documents\tsd> dir C:\Users\user\anaconda3\envs\csp_env\Lib\site-packages\csp\impl\wiring
+
+
+    Directory: C:\Users\user\anaconda3\envs\csp_env\Lib\site-packages\csp\impl\wiring
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----         9/14/2025   8:16 AM                numba_utils
+d-----         9/14/2025   8:16 AM                __pycache__
+-a----         9/14/2025   8:16 AM          15819 adapters.py
+-a----         9/14/2025   8:16 AM            288 ast_utils.py
+-a----         9/14/2025   8:16 AM          23439 base_parser.py
+-a----         9/14/2025   8:16 AM           1225 delayed_edge.py                                                                                                                                                                                                  
+-a----         9/14/2025   8:16 AM            639 delayed_node.py                                                                                                                                                                                                  
+-a----         9/14/2025   8:16 AM           7102 dynamic.py                                                                                                                                                                                                       
+-a----         9/14/2025   8:16 AM           6722 edge.py                                                                                                                                                                                                          
+-a----         9/14/2025   8:16 AM           3138 feedback.py                                                                                                                                                                                                      
+-a----         9/14/2025   8:16 AM           7538 graph.py                                                                                                                                                                                                         
+-a----         9/14/2025   8:16 AM           7950 graph_parser.py                                                                                                                                                                                                  
+-a----         9/14/2025   8:16 AM          10899 node.py
+-a----         9/14/2025   8:16 AM          41020 node_parser.py
+-a----         9/14/2025   8:16 AM           9273 numba_node.py
+-a----         9/14/2025   8:16 AM          19273 numba_node_parser.py
+-a----         9/14/2025   8:16 AM            998 outputs.py
+-a----         9/14/2025   8:16 AM           8093 runtime.py
+-a----         9/14/2025   8:16 AM          17641 signature.py
+-a----         9/14/2025   8:16 AM             48 special_output_names.py
+-a----         9/14/2025   8:16 AM           3749 threaded_runtime.py
+-a----         9/14/2025   8:16 AM            565 __init__.py
+
+
+
+
+from torch import nn
