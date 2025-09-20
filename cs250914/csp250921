@@ -1,0 +1,6 @@
+ Stage 1: csp.curve(), csp.print()
+  - Stage 2: @csp.node, csp.Struct, with csp.state()
+  - Stage 3: csp.set_buffering_policy(), csp.values_at()
+  - Stage 5: csp.adapters.*, external data integration
+  - Stage 7: csp.stats.*, csp.timer(), csp.delay()
+  - Stage 8: csp.DynamicBasket, csp.remove_dynamic_key()
