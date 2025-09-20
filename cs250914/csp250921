@@ -4,3 +4,158 @@
   - Stage 5: csp.adapters.*, external data integration
   - Stage 7: csp.stats.*, csp.timer(), csp.delay()
   - Stage 8: csp.DynamicBasket, csp.remove_dynamic_key()
+
+#what data type could be handled in each step?
+ Stage 1: Basic CSP (bidask.py)
+
+  # Simple static data with basic graph
+  @csp.graph
+  def simple_bid_ask_example():
+      bid_data = csp.curve(typ=float, data=[(start, 100.0), ...])
+      csp.print("BID", bid_data)  # Just printing values
+  Key characteristics:
+  - Only @csp.graph decorator
+  - Simple csp.curve() data input
+  - Basic csp.print() output
+  - No custom nodes or complex logic
+  - ~25 lines of code
+
+  Stage 2: Custom Nodes & Complex Graphs (e4_trade_pnl.py)
+
+  # Custom struct definitions
+  class Trade(csp.Struct):
+      price: float
+      qty: int
+      buy: bool
+
+  # Custom nodes with state management
+  @csp.node
+  def vwap(trade: ts[Trade]) -> csp.Outputs(vwap=ts[float], qty=ts[int]):
+      with csp.state():
+          s_cum_notional = 0.0
+          s_cum_qty = 0
+      # Complex calculations with multiple outputs
+      csp.output(vwap=s_cum_notional / s_cum_qty, qty=s_cum_qty)
+  Key characteristics:
+  - Custom csp.Struct classes
+  - @csp.node with state management (with csp.state())
+  - Multiple outputs using csp.Outputs()
+  - Complex business logic (VWAP, PnL calculations)
+  - Advanced data flow (csp.split(), conditional logic)
+  - ~100 lines of code
+
+  Stage 3: Historical Buffers (task1.py)
+
+  # Buffer management and historical data access
+  @csp.node
+  def time_moving_average(x: ts[float], window_size: float) -> ts[float]:
+      with csp.start():
+          csp.set_buffering_policy(x, tick_history=timedelta(seconds=window_size))
+
+      if csp.ticked(x):
+          buffer = csp.values_at(
+              x,
+              start_index_or_time=timedelta(seconds=-window_size),
+              end_index_policy=csp.TimeIndexPolicy.INCLUSIVE
+          )
+          return np.mean(buffer)
+  Key characteristics:
+  - csp.start() initialization blocks
+  - csp.set_buffering_policy() for memory management
+  - csp.values_at() for historical data access
+  - Time-based indexing with policies
+  - Unit testing with unittest
+  - NumPy integration for calculations
+
+  Stage 5: Adapters & External Data (parquet/task1.py)
+
+  # External data I/O with adapters
+  from csp.adapters.parquet import ParquetOutputConfig, ParquetReader, ParquetWriter
+
+  @csp.graph
+  def write_market_ticks(file_name: str):
+      writer = ParquetWriter(
+          file_name=file_name,
+          timestamp_column_name="timestamp",
+          config=ParquetOutputConfig(allow_overwrite=True),
+      )
+      writer.publish_struct(tick_curve)
+
+  @csp.graph  
+  def read_market_data(file_name: str):
+      reader = ParquetReader(file_name, time_column="timestamp")
+      data = reader.subscribe_all(MarketTick)
+  Key characteristics:
+  - External adapter imports (csp.adapters.*)
+  - File I/O operations (read/write Parquet)
+  - Data serialization/deserialization
+  - Integration with pandas DataFrames
+  - Temporary file management
+  - Error handling and logging
+
+  Stage 7: Statistical Analysis (task1.py)
+
+  # Advanced statistical operations
+  def stats_graph():
+      # Rolling VWAP with reset triggers
+      vwap = stats.mean(
+          price,
+          interval=timedelta(minutes=2),
+          min_window=timedelta(minutes=1),
+          trigger=trigger,
+          weights=volume,
+          reset=reset,
+      )
+
+      # Exponential weighted moving average
+      ewm_price = stats.ema(
+          price,
+          halflife=timedelta(minutes=2),
+          trigger=trigger,
+          reset=reset,
+          min_data_points=2
+      )
+  Key characteristics:
+  - csp.stats library usage
+  - Complex windowing operations (rolling, exponential)
+  - Timer-based triggers (csp.timer())
+  - Reset mechanisms (csp.delay())
+  - Weighted calculations (VWAP)
+  - Result collection with csp.add_graph_output()
+
+  Stage 8: Dynamic Structures (task1.py)
+
+  # Dynamic portfolio management
+  @csp.node
+  def dynamic_portfolio_selection(price: ts[float], symbol: ts[str]) -> csp.DynamicBasket[str, float]:
+      if csp.ticked(price) and csp.valid(symbol):
+          if price > 101.0:
+              csp.output({symbol: price})  # Add to basket
+          elif price < 99.0:
+              csp.remove_dynamic_key(symbol)  # Remove from basket
+
+  @csp.node
+  def monitor_dynamic_portfolio(portfolio: csp.DynamicBasket[str, float]):
+      if csp.ticked(portfolio.shape):  # React to shape changes
+          for symbol in portfolio.shape.added:
+              print(f'Symbol {symbol} added')
+          for symbol in portfolio.shape.removed:
+              print(f'Symbol {symbol} removed')
+  Key characteristics:
+  - csp.DynamicBasket for runtime shape changes
+  - csp.remove_dynamic_key() for dynamic removal
+  - Shape monitoring (portfolio.shape.added/removed)
+  - Conditional basket operations
+  - Runtime graph modification
+  - Complex event handling
+
+  Key Code Evolution Summary:
+
+  Complexity Progression:
+
+  1. Stage 1: 25 lines → Basic curves and printing
+  2. Stage 2: 100 lines → Custom nodes, state, business logic
+  3. Stage 3: 100+ lines → Buffer management, historical access
+  4. Stage 5: 110+ lines → External adapters, I/O operations
+  5. Stage 7: 85+ lines → Statistical libraries, advanced analytics
+  6. Stage 8: 75+ lines → Dynamic structures, runtime modifications
